@@ -13,39 +13,47 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int Id;
+
 	@Column(unique = true, nullable = false)
 	private String email;
+
 	@Column(unique = true, nullable = false)
 	private String username;
 	@Column(nullable = false)
+
 	private String password;
 	@Column(nullable = false)
+
 	private String firstName;
 	@Column(nullable = false)
+
 	private String lastName;
+
+	@Lob
 	private byte[] photo;
+
 	private boolean active = true;
+
 	private boolean admin = false;
+
 	@Temporal(TemporalType.DATE)
 	private Date dateCreated;
+
 	@Temporal(TemporalType.DATE)
 	private Date lastUpdated;
-	
+
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, mappedBy = "createdBy")
 	Set<Topic> topics;
-
-	public Set<Topic> getTopics() {
-		return topics;
-	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, mappedBy = "user")
 	List<Subscription> subscription;
@@ -79,6 +87,10 @@ public class User {
 
 	public void setResourceList(List<Resource> resourceList) {
 		this.resourceList = resourceList;
+	}
+
+	public Set<Topic> getTopics() {
+		return topics;
 	}
 
 	public void setTopics(Set<Topic> topics) {

@@ -1,6 +1,7 @@
 package com.ttnd.linksharing.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,8 +14,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Component;
 
 @WebFilter(urlPatterns = "/*")
 public class CustomAuthenticationEntryPoint implements Filter {
@@ -33,9 +32,7 @@ public class CustomAuthenticationEntryPoint implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse resp = (HttpServletResponse) response;
 
-		System.out.println("Request Uri -->>>" + req.getRequestURI());
-		System.out.println("Is req allowed -->>>" + permitAllUrls.contains(req.getRequestURI()));
-		if (permitAllUrls.contains(req.getRequestURI())) {
+		if ((req.getSession().getAttribute("user") != null) || isAllowed(req)) {
 			chain.doFilter(req, resp);
 		} else {
 			resp.sendRedirect(req.getContextPath() + "/login");
@@ -44,10 +41,19 @@ public class CustomAuthenticationEntryPoint implements Filter {
 
 	@Override
 	public void init(FilterConfig config) throws ServletException {
-		permitAllUrls = new HashSet<>();
-		permitAllUrls.add(config.getServletContext().getContextPath() + "/");
-		permitAllUrls.add(config.getServletContext().getContextPath() + "/login");
-		permitAllUrls.add(config.getServletContext().getContextPath() + "/register");
+		permitAllUrls = new HashSet<>(
+				Arrays.asList("/login", "/register", "/resources/css", "/resources/js", "/resources/images"));
+	}
+
+	public boolean isAllowed(HttpServletRequest request) {
+		boolean isAllowed = false;
+		for (String url : permitAllUrls) {
+			if ((request.getRequestURI()).contains(request.getContextPath() + url)) {
+				isAllowed = true;
+				break;
+			}
+		}
+		return isAllowed;
 	}
 
 }

@@ -128,6 +128,6 @@ public class UserDTO {
 
 	public void setUserImage(CommonsMultipartFile userImage) throws IOException {
 		this.userImage = userImage;
-		//this.setPhoto(userImage.getBytes());
+		this.setPhoto(userImage.getBytes());
 	}
 }
